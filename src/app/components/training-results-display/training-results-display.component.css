@@ -1,0 +1,32 @@
+#chart {
+    height: 60%;
+    width: 100%;
+    position: absolute;
+    top: 35%;
+    left: 63%;
+    transform: translate(-50%, -50%);
+}
+
+.options {
+    position: absolute;
+    top: 80%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+button {
+    background-color: #4caf50;
+    color: white;
+    padding: 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 100px;
+  }
+
+h2 {
+    position: absolute;
+    top: 1%;
+    left: 7%;
+    transform: translate(-50%, -50%);
+}

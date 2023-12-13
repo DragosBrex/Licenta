@@ -1,0 +1,24 @@
+
+<div class="container">
+    <div class="title">
+        <h2>My Models</h2>
+    </div>
+
+    <div *ngIf="models.length > 0">
+        <div class="models-grid">
+          <div *ngFor="let model of models" class="model">
+            <button (click)="navigateToFileUpload(model)">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/1869px-Python-logo-notext.svg.png" alt="Python Logo" width="100px" height="100px" />
+            </button>
+            <br>
+            {{ model.name }}
+          </div>
+        </div>
+      </div>
+      
+
+    <div *ngIf="models.length == 0">
+        <h3>You have no models</h3>
+    </div>
+    
+</div>
