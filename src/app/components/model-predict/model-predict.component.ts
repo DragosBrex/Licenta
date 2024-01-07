@@ -13,10 +13,10 @@ export class ModelPredictData {
     size: number
   } = { name: '', path: '', size: 0 };
   selectedTimeInterval: string[] = [];
-  timeSpan: number = 0;
+  timeSpan: number = 1;
   signalsToPredict: string = '';
   signalsWithInfluence: string = '';
-  pastSteps: number = 0;
+  pastSteps: number = 1;
 }
 
 @Component({
@@ -30,6 +30,14 @@ export class ModelPredictComponent {
   modelData: ModelPredictData = new ModelPredictData();
   model: MlModel = new MlModel;
   predictingFileID: string = '';
+  inputMinVal: number = 0;
+  inputMaxVal: number = 10000;
+  timeGap: number = 1;
+  stiStart: string = '1';
+  stiEnd: string = '10000';
+  scrollStart: string = '1';
+  scrollEnd: string = '10000';
+  fileIndexes: string[] = [];
 
   constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router) {}
 
@@ -39,8 +47,57 @@ export class ModelPredictComponent {
     this.modelData.name = this.model.name;
     this.modelData.signalsToPredict = this.transformArrayIntoString(this.model.signalsToPredict);
     this.modelData.signalsWithInfluence = this.transformArrayIntoString(this.model.signalsWithInfluence);
-    this.modelData.pastSteps = this.model.pastSteps
+    this.modelData.pastSteps = this.model.pastSteps;
+    this.getAllIndexesFromFile();
   };
+
+  rangeValueChangedLeft(): void {
+    if(Number(this.scrollEnd) - Number(this.scrollStart) < this.timeGap) {
+      this.scrollStart = (Number(this.scrollEnd) - this.timeGap).toString();
+      const rangeMin = document.getElementById("range-min") as HTMLInputElement;
+      rangeMin!.value = this.scrollStart;
+    }
+    else {
+      const progress = document.getElementById("progress");
+      progress!.style.left = (Number(this.scrollStart) / Number(this.inputMaxVal)) * 100 + "%";
+    }
+
+    this.stiStart = this.fileIndexes[Number(this.scrollStart) - 1];
+  }
+
+  rangeValueChangedRight(): void {
+    if(Number(this.scrollEnd) - Number(this.scrollStart) < this.timeGap) {
+      this.scrollEnd = (Number(this.scrollStart) + this.timeGap).toString();
+      const rangeMax = document.getElementById("range-max") as HTMLInputElement;
+      rangeMax!.value = this.scrollEnd;
+    }
+    else {
+      const progress = document.getElementById("progress");
+      progress!.style.right = 100 - (Number(this.scrollEnd) / this.inputMaxVal) * 100 + "%";
+    }
+
+    this.stiEnd = this.fileIndexes[Number(this.scrollEnd) - 1];
+  }
+
+  getAllIndexesFromFile(): void {
+    this.predictingFileID = sessionStorage.getItem("predictingFileID")!;
+    this.http.get<any>('http://localhost:8080/files/indexes/' + this.predictingFileID).subscribe(
+      (response) => {
+          this.fileIndexes = response;
+          console.log('File indexes read successfully', this.fileIndexes);
+          this.inputMinVal = 1;
+          this.inputMaxVal = response.length;
+          this.scrollStart = '1';
+          this.scrollEnd = (response.length).toString();
+
+          this.stiStart = this.fileIndexes[Number(this.scrollStart) - 1];
+          this.stiEnd = this.fileIndexes[Number(this.scrollEnd) - 1];
+      },
+      (error) => {
+        console.error('Error while reading file information', error);
+      }
+    );
+  }
 
   loadFileInfoFromEndpoint(): void {
     this.predictingFileID = sessionStorage.getItem("predictingFileID")!;
@@ -68,6 +125,12 @@ export class ModelPredictComponent {
   }
 
   predictUsingModel(): void {
+
+    this.modelData.selectedTimeInterval.push(this.stiStart);
+    this.modelData.selectedTimeInterval.push(this.stiEnd);
+
+    console.log(this.modelData.selectedTimeInterval)
+
     const model = {
       name: this.modelData.name,
       predictingDataFile: {

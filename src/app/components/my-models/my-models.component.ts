@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { MatDialog, MatDialogModule} from '@angular/material/dialog'
+import { ModelInfoComponent } from '../model-info/model-info.component';
 
 export class MlModel {
   name: string = '';
@@ -15,7 +17,7 @@ export class MlModel {
 @Component({
   selector: 'app-my-models',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatDialogModule],
   templateUrl: './my-models.component.html',
   styleUrl: './my-models.component.css'
 })
@@ -24,7 +26,11 @@ export class MyModelsComponent {
   models: MlModel[] = [];
   //mlModel: MlModel = new MlModel;
 
-  constructor(private http: HttpClient, private router: Router ) {};
+  constructor(private http: HttpClient, private router: Router, private dialog: MatDialog) {};
+
+  openDialog(model: MlModel) {
+    this.dialog.open(ModelInfoComponent, {data: model});
+  }
 
   ngOnInit() {
     this.http.get<any[]>('http://localhost:8080/models/all').subscribe(

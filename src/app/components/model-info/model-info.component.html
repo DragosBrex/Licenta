@@ -1,0 +1,38 @@
+<div class="ml-model-container">
+    <h2>{{ model.name }}</h2>
+    
+    <div class="parameter">
+      <label>Signals to Predict:</label>
+      <ul>
+        <li *ngFor="let signal of model.signalsToPredict">{{ signal }}</li>
+      </ul>
+    </div>
+    
+    <div class="parameter">
+      <label>Signals with Influence:</label>
+      <ul>
+        <li *ngFor="let signal of model.signalsWithInfluence">{{ signal }}</li>
+      </ul>
+    </div>
+    
+    <div class="parameter">
+      <label>Past Steps:</label>
+      <span>{{ model.pastSteps }}</span>
+    </div>
+    
+    <div class="parameter">
+      <label>Future Steps:</label>
+      <span>{{ model.futureSteps }}</span>
+    </div>
+    
+    <div class="parameter">
+      <label>Algorithm:</label>
+      <span>{{ model.algorithm }}</span>
+    </div>
+
+    <button (click)="closeDialog()"> Close </button>
+    <button (click)="navigateToTrainingResults(model)">Training Results</button>
+    <button (click)="navigateToFileUpload(model)">Predict Using the Model</button>
+</div>
+
+

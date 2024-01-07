@@ -1,8 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, Renderer2, ViewChild, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { MlModel } from '../my-models/my-models.component';
 
 export class ModelFormData {
   name: string = '';
@@ -12,15 +13,15 @@ export class ModelFormData {
     size: number
   } = { name: '', path: '', size: 0 };
   selectedTimeInterval: string[] = [];
-  timeSpan: number = 0;
+  timeSpan: number = 1;
   timeDependency: boolean = false;
   signalsToPredict: string = '';
   signalsWithInfluence: string = '';
-  pastSteps: number = 0;
-  futureSteps: number = 0;
-  trainTestSplit: number = 0;
-  algorithm: string = '';
-  epochs: number = 0;
+  pastSteps: number = 1;
+  futureSteps: number = 1;
+  trainTestSplit: number = 0.1;
+  algorithm: string = 'ALGORITHM1';
+  epochs: number = 1;
 }
 
 @Component({
@@ -32,7 +33,6 @@ export class ModelFormData {
 })
 export class ModelFormComponent {
   modelData: ModelFormData = new ModelFormData();
-  loadingAnimation: boolean = false; 
   trainingFileID: string = "";
   columnsPredict: string[] = [];
   columnsInfluence: string[] = [];
@@ -42,39 +42,49 @@ export class ModelFormComponent {
   selectedInfluence: string = '';
   inputMinVal: number = 0;
   inputMaxVal: number = 10000;
-  timeGap: number = 5;
+  timeGap: number = 1;
   stiStart: string = '1';
   stiEnd: string = '10000';
+  scrollStart: string = '1';
+  scrollEnd: string = '10000';
+  fileIndexes: string[] = [];
 
   constructor(private http: HttpClient, private router: Router) {}
+
+  //@ViewChild(AppComponent) appComponent!: AppComponent; 
 
   ngOnInit() {
     this.loadColumnsFromEndpoint();
     this.loadFileInfoFromEndpoint();
+    this.getAllIndexesFromFile();
   }
 
   rangeValueChangedLeft(): void {
-    if(Number(this.stiEnd) - Number(this.stiStart) < this.timeGap) {
-      this.stiStart = (Number(this.stiEnd) - this.timeGap).toString();
+    if(Number(this.scrollEnd) - Number(this.scrollStart) < this.timeGap) {
+      this.scrollStart = (Number(this.scrollEnd) - this.timeGap).toString();
       const rangeMin = document.getElementById("range-min") as HTMLInputElement;
-      rangeMin!.value = this.stiStart;
+      rangeMin!.value = this.scrollStart;
     }
     else {
       const progress = document.getElementById("progress");
-      progress!.style.left = (Number(this.stiStart) / Number(this.inputMaxVal)) * 100 + "%";
+      progress!.style.left = (Number(this.scrollStart) / Number(this.inputMaxVal)) * 100 + "%";
     }
+
+    this.stiStart = this.fileIndexes[Number(this.scrollStart) - 1];
   }
 
   rangeValueChangedRight(): void {
-    if(Number(this.stiEnd) - Number(this.stiStart) < this.timeGap) {
-      this.stiEnd = (Number(this.stiStart) + this.timeGap).toString();
+    if(Number(this.scrollEnd) - Number(this.scrollStart) < this.timeGap) {
+      this.scrollEnd = (Number(this.scrollStart) + this.timeGap).toString();
       const rangeMax = document.getElementById("range-max") as HTMLInputElement;
-      rangeMax!.value = this.stiEnd;
+      rangeMax!.value = this.scrollEnd;
     }
     else {
       const progress = document.getElementById("progress");
-      progress!.style.right = 100 - (Number(this.stiEnd) / this.inputMaxVal) * 100 + "%";
+      progress!.style.right = 100 - (Number(this.scrollEnd) / this.inputMaxVal) * 100 + "%";
     }
+
+    this.stiEnd = this.fileIndexes[Number(this.scrollEnd) - 1];
   }
   
   loadColumnsFromEndpoint(): void {
@@ -163,16 +173,32 @@ export class ModelFormComponent {
   );
   }
 
-  trainAndTestModel(): void {
-    this.loadingAnimation = true;
-    console.log("Loading animation: ", this.loadingAnimation);
+  getAllIndexesFromFile(): void {
+    this.http.get<any>('http://localhost:8080/files/indexes/' + this.trainingFileID).subscribe(
+      (response) => {
+          this.fileIndexes = response;
+          console.log('File indexes read successfully', this.fileIndexes);
+          this.inputMinVal = 1;
+          this.inputMaxVal = response.length;
+          this.scrollStart = '1';
+          this.scrollEnd = (response.length).toString();
 
+          this.stiStart = this.fileIndexes[Number(this.scrollStart) - 1];
+          this.stiEnd = this.fileIndexes[Number(this.scrollEnd) - 1];
+      },
+      (error) => {
+        console.error('Error while reading file information', error);
+      }
+    );
+  }
+
+  trainAndTestModel(): void {
     this.modelData.selectedTimeInterval.push(this.stiStart);
     this.modelData.selectedTimeInterval.push(this.stiEnd);
-
+  
     this.modelData.signalsToPredict = this.transformArrayIntoString(this.selectedSignalsToPredict);
     this.modelData.signalsWithInfluence = this.transformArrayIntoString(this.selectedSignalsWithInfluence);
-
+  
     const model = {
       name: this.modelData.name,
       trainingAndTestingDataFile: {
@@ -191,19 +217,34 @@ export class ModelFormComponent {
       algorithm: this.modelData.algorithm,
       epochs: this.modelData.epochs,
     };
-
+  
     console.log(model);
+  
+    this.router.navigate(['/home']);
 
-    this.http.post<any>('http://localhost:8080/models/train', model).subscribe(
-      (response) => {
-        localStorage.setItem('trainingActualValues', response.actualValues);
-        localStorage.setItem('trainingPredictedValues', response.predictedValues);
-
-        this.router.navigate(['/training-results', model.name]);
-      },
-      (error) => {
+    this.trainAndTestAsync(model)
+      .then((response) => {
+        console.log(response)
+      })
+      .catch((error) => {
         console.error('Error while training and testing the model', error);
-      }
-    );
+      })
+      .finally(() => {
+
+      });
+  }
+  
+  async trainAndTestAsync(model: MlModel): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.http.post<any>('http://localhost:8080/models/train', model)
+        .subscribe(
+          (response) => {
+            resolve(response);
+          },
+          (error) => {
+            reject(error);
+          }
+        );
+    });
   }
 }

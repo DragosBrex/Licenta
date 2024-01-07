@@ -1,23 +1,47 @@
-<div class="container">
-    <br>
-    <label for="selectedTimeInterval">Selected Time Interval </label>
-    <input [(ngModel)]="modelData.selectedTimeInterval[0]" name="selectedTimeInterval" /><br><br>
-  
-    <label for="timeSpan">Time Span </label>
-    <input [(ngModel)]="modelData.timeSpan" name="timeSpan" type="number" /><br><br>
-  
-    <label for="signalsToPredict">Signals to Predict </label>
-    <div *ngFor="let signal of model.signalsToPredict"> {{signal.split('"').join('')}} </div>
-    <br><br>
-  
-    <label for="signalsWithInfluence">Signals with Influence </label>
-    <div *ngFor="let signal of model.signalsWithInfluence"> {{signal.split('"').join('')}} </div>
-    <br><br>
-  
-    <label for="pastSteps">Past Steps </label>
-    <div > {{model.pastSteps}} </div>
+<form>
+    <div class="container">
+        <br>
+        <label for="selectedTimeInterval">Selected Time Interval </label>
+        <div class="selectedTimeInterval">
+            <div class="wrapper">
+            <div class="time-input">
+                <div class="field">
+                <span>From</span>
+                <input [(ngModel)]="stiStart" name="stiStart" type="text" class="input-min" (input)="rangeValueChangedLeft()">
+                </div>
+                <div class="separator">-</div>
+                <div class="field">
+                <span>To</span>
+                <input [(ngModel)]="stiEnd" name="stiEnd" type="text" class="input-max" (input)="rangeValueChangedRight()">
+                </div>
+            </div>
+            <div class="slider">
+                <div class="progress" id="progress"></div>
+            </div>
+            <div class="range-input">
+                <input [(ngModel)]="scrollStart" name="scrollStart" type="range" class="range-min"  id="range-min" [min]="inputMinVal" [max]="inputMaxVal" value="1" (input)="rangeValueChangedLeft()">
+                <input [(ngModel)]="scrollEnd" name="scrollEnd" type="range" class="range-max" id="range-max" [min]="inputMinVal" [max]="inputMaxVal" value="100"  (input)="rangeValueChangedRight()">
+            </div>
+            </div>
+        </div>
     
-  
-    <button (click)="predictUsingModel()">Predict using the Model</button>
-</div>
+        <label for="timeSpan">Time Span </label>
+        <input [(ngModel)]="modelData.timeSpan" name="timeSpan" type="number" min="1" required="true" /><br><br>
+    
+        <label for="signalsToPredict">Signals to Predict </label>
+        <div *ngFor="let signal of model.signalsToPredict"> {{signal.split('"').join('')}} </div>
+        <br><br>
+    
+        <label for="signalsWithInfluence">Signals with Influence </label>
+        <div *ngFor="let signal of model.signalsWithInfluence"> {{signal.split('"').join('')}} </div>
+        <br><br>
+    
+        <label for="pastSteps">Past Steps </label>
+        <div > {{model.pastSteps}} </div>
+        
+    
+        <button (click)="predictUsingModel()">Predict using the Model</button>
+    </div>
+</form>
+
   

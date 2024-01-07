@@ -55,8 +55,16 @@ export class TrainingResultsDisplayComponent {
     this.modelName = this.route.snapshot.paramMap.get('modelName')!;
     console.log(this.modelName);
 
-    localStorage.getItem('trainingActualValues')!.split(",").forEach(number => this.trainingActualValues.push(Number(number)));
-    localStorage.getItem('trainingPredictedValues')!.split(",").forEach(number => this.trainingPredictedValues.push(Number(number)));
+    this.http.get<string[]>('http://localhost:8080/models/name=' + this.modelName).subscribe(
+    (response) => {
+      console.log(response)
+    },
+    (error) => {
+      console.error('Error while returning model by name', error);
+    }
+  );
+
+
 
     this.trainingActualValues.forEach(number => this.labels.push(this.trainingActualValues.indexOf(number)));
 

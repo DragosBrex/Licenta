@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { Main } from '../../../main';
 
 @Component({
   selector: 'app-home-page',
@@ -12,6 +14,9 @@ import { Router } from '@angular/router';
 export class HomePageComponent {
 
   constructor(private router: Router) {}
+
+  ngOnInit() {
+  }
 
   navigateToMyModels() {
    this.router.navigate(['/my-models']);

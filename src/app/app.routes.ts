@@ -5,7 +5,7 @@ import { FileUploadComponent } from './components/file-upload/file-upload.compon
 import { TrainingResultsDisplayComponent } from './components/training-results-display/training-results-display.component';
 import { MyModelsComponent } from './components/my-models/my-models.component';
 import { ModelPredictComponent } from './components/model-predict/model-predict.component';
-import { PredictionResultsDisplayComponent } from './prediction-results-display/prediction-results-display.component';
+import { PredictionResultsDisplayComponent } from './components/prediction-results-display/prediction-results-display.component';
 
 export const routes: Routes = [
     { path: '', pathMatch: 'full', redirectTo: 'home' },
