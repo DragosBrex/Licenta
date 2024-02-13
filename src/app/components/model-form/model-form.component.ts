@@ -2,8 +2,12 @@ import { Component, Renderer2, ViewChild, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, convertToParamMap } from '@angular/router';
 import { MlModel } from '../my-models/my-models.component';
+import { NotificationService } from '../notification/notification.service';
+import { MatDialog } from '@angular/material/dialog';
+import { DataPreviewComponent } from '../data-preview/data-preview.component';
+import { _isNumberValue } from '@angular/cdk/coercion';
 
 export class ModelFormData {
   name: string = '';
@@ -34,6 +38,7 @@ export class ModelFormData {
 export class ModelFormComponent {
   modelData: ModelFormData = new ModelFormData();
   trainingFileID: string = "";
+  columns: string[] = [];
   columnsPredict: string[] = [];
   columnsInfluence: string[] = [];
   selectedSignalsToPredict: string[] = [];
@@ -42,21 +47,75 @@ export class ModelFormComponent {
   selectedInfluence: string = '';
   inputMinVal: number = 0;
   inputMaxVal: number = 10000;
-  timeGap: number = 1;
+  timeGap: number = 3;
   stiStart: string = '1';
   stiEnd: string = '10000';
   scrollStart: string = '1';
   scrollEnd: string = '10000';
   fileIndexes: string[] = [];
+  nameInvalid: boolean = false;
+  signalsToPredictInvalid: boolean = false;
+  signalsWithInfluenceInvalid: boolean = false;
+  canBeTrained: boolean = true;
+  correlationAnimation: boolean = false;
+  
 
-  constructor(private http: HttpClient, private router: Router) {}
-
-  //@ViewChild(AppComponent) appComponent!: AppComponent; 
+  constructor(private http: HttpClient, private router: Router, private notificationService: NotificationService, private dialog: MatDialog) {}
 
   ngOnInit() {
     this.loadColumnsFromEndpoint();
     this.loadFileInfoFromEndpoint();
     this.getAllIndexesFromFile();
+  }
+
+  openDialog(toPredict: string) {
+    switch(toPredict) {
+      case "predict":
+        this.dialog.open(DataPreviewComponent, {data: [this.trainingFileID, this.selectedSignalsToPredict]});
+        break;
+      case "influence":
+        this.dialog.open(DataPreviewComponent, {data: [this.trainingFileID, this.selectedSignalsWithInfluence]});
+        break;
+    }
+
+  }
+
+  getCorrelationData() {
+    this.correlationAnimation = true;
+
+    const correlationData = {
+      filePath: this.modelData.trainingAndTestingDataFile.path,
+      signalsToPredict: this.transformArrayIntoString(this.selectedSignalsToPredict).replace(/,/g, '')
+    };
+  
+    this.getCorrelationDataAsync(correlationData)
+      .then(response => {
+        this.correlationAnimation = false;
+  
+        this.selectedSignalsWithInfluence = [];
+  
+        this.columns.forEach((value) => {
+          console.log(value)
+          if (response!.toString().includes(value.toString()))
+            this.selectedSignalsWithInfluence.push(value);
+        });
+      })
+      .catch(error => {
+        console.error('Error returning correlation vector', error);
+      });
+  }
+  
+  getCorrelationDataAsync(correlationData: any) {
+    return new Promise((resolve, reject) => {
+      this.http.post<any>('http://localhost:8080/models/correlation', correlationData).subscribe(
+        (response) => {
+          resolve(response);
+        },
+        (error) => {
+          reject(error);
+        }
+      );
+    });
   }
 
   rangeValueChangedLeft(): void {
@@ -86,16 +145,47 @@ export class ModelFormComponent {
 
     this.stiEnd = this.fileIndexes[Number(this.scrollEnd) - 1];
   }
+
+  
+  inputValueChangedLeft() {
+    if(this.stiStart == '')
+      this.scrollStart = this.inputMinVal.toString();
+    else {
+      if(Number(this.stiEnd) - Number(this.stiStart) < this.timeGap) {
+       this.stiStart = (Number(this.stiEnd) - this.timeGap).toString()
+    }
+
+      this.scrollStart = this.stiStart;
+      const progress = document.getElementById("progress");
+      progress!.style.left = (Number(this.scrollStart) / Number(this.inputMaxVal)) * 100 + "%";
+    }
+  }
+
+  inputValueChangedRight() {
+    if(this.stiEnd == '') {
+      this.scrollEnd = this.inputMaxVal.toString();
+      const progress = document.getElementById("progress");
+      progress!.style.right = 100 - (Number(this.scrollEnd) / this.inputMaxVal) * 100 + "%";
+    }
+    else {
+      if(Number(this.stiEnd) - Number(this.stiStart) < this.timeGap) {
+       this.stiEnd = (Number(this.stiStart) + this.timeGap).toString()
+      } 
+
+      this.scrollEnd = this.stiEnd;
+      const progress = document.getElementById("progress");
+      progress!.style.right = 100 - (Number(this.scrollEnd) / this.inputMaxVal) * 100 + "%";
+    }
+  }
   
   loadColumnsFromEndpoint(): void {
     this.trainingFileID = sessionStorage.getItem("trainingFileID")!;
     
     this.http.get<string[]>('http://localhost:8080/files/columns/' + this.trainingFileID).subscribe(
     (response) => {
-      console.log('Columns gathered successfully', response);
       this.columnsPredict = [...response];
       this.columnsInfluence = [...response];
-
+      this.columns = [...response];
     },
     (error) => {
       console.error('Error while reading column names', error);
@@ -104,21 +194,23 @@ export class ModelFormComponent {
   }
 
   updateSelectedSignalsToPredictList(): void {
-    if(!this.selectedSignalsToPredict.includes(this.selectedPredict) && this.selectedPredict != '') {
+    if(!this.selectedSignalsToPredict.includes(this.selectedPredict) && this.selectedPredict != '' && this.selectedPredict !='default') {
       this.selectedSignalsToPredict.push(this.selectedPredict)
       this.selectedSignalsWithInfluence.push(this.selectedPredict)
       this.columnsPredict.splice(this.columnsPredict.indexOf(this.selectedPredict, 0), 1);
       this.columnsInfluence.splice(this.columnsInfluence.indexOf(this.selectedPredict, 0), 1);
     }
 
-    console.log("Data to predict: ", this.selectedSignalsToPredict); 
+    this.changeClass('sToPredict');
   }
 
   updateSelectedSignalsWithInfluenceList(): void {
-    if(!this.selectedSignalsWithInfluence.includes(this.selectedInfluence) && this.selectedInfluence != '') {
+    if(!this.selectedSignalsWithInfluence.includes(this.selectedInfluence) && this.selectedInfluence != '' && this.selectedInfluence !='default') {
       this.selectedSignalsWithInfluence.push(this.selectedInfluence)
       this.columnsInfluence.splice(this.columnsInfluence.indexOf(this.selectedInfluence, 0), 1);
     }
+
+    this.changeClass('sWithInfluence');
 
     console.log("Data with influence: ", this.selectedSignalsWithInfluence);
   }
@@ -162,7 +254,6 @@ export class ModelFormComponent {
     
     this.http.get<any>('http://localhost:8080/files/' + this.trainingFileID).subscribe(
     (response) => {
-      console.log('File information read successfully', response);
       this.modelData.trainingAndTestingDataFile.name = response.name;
       this.modelData.trainingAndTestingDataFile.path = response.path;
       this.modelData.trainingAndTestingDataFile.size = response.size;
@@ -177,7 +268,6 @@ export class ModelFormComponent {
     this.http.get<any>('http://localhost:8080/files/indexes/' + this.trainingFileID).subscribe(
       (response) => {
           this.fileIndexes = response;
-          console.log('File indexes read successfully', this.fileIndexes);
           this.inputMinVal = 1;
           this.inputMaxVal = response.length;
           this.scrollStart = '1';
@@ -190,6 +280,36 @@ export class ModelFormComponent {
         console.error('Error while reading file information', error);
       }
     );
+  }
+
+  submitForm() {
+    if (this.modelData.name == '') {
+      this.nameInvalid = true;
+    }
+    if (this.selectedSignalsToPredict.length == 0) {
+      this.signalsToPredictInvalid = true;
+    }
+    if (this.selectedSignalsWithInfluence.length == 0) {
+      this.signalsWithInfluenceInvalid = true;
+    }
+
+    if(!this.nameInvalid && !this.signalsToPredictInvalid && !this.signalsWithInfluenceInvalid)
+     this.trainAndTestModel();
+  }
+
+  changeClass(name: string) {
+    switch(name) {
+      case "name":
+        this.nameInvalid = false;
+        break;
+      case "sToPredict":
+        this.signalsToPredictInvalid = false;
+        this.signalsWithInfluenceInvalid = false;
+        break;
+      case "sWithInfluence":
+        this.signalsWithInfluenceInvalid = false;
+        break;
+    }
   }
 
   trainAndTestModel(): void {
@@ -222,9 +342,13 @@ export class ModelFormComponent {
   
     this.router.navigate(['/home']);
 
+    this.notificationService.createInfoNotification(model,'Your model is being trained..');
+
     this.trainAndTestAsync(model)
       .then((response) => {
-        console.log(response)
+        console.log(response);
+        this.notificationService.closeNotification(model);
+        this.notificationService.createSuccesNotification(model, 'Your model has trained successfully! \nCheck \"My Models\" for more information.');
       })
       .catch((error) => {
         console.error('Error while training and testing the model', error);

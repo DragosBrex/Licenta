@@ -1,1 +1,5 @@
-<p>notification works!</p>
+<div class="notification">
+    <p>{{model.name}}</p>
+    <p>{{message}}</p>
+    <button (click)="closeNotification(model)">X</button>
+</div>

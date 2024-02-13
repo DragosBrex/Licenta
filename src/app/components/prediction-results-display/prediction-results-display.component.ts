@@ -14,6 +14,9 @@ import { Chart } from 'chart.js/auto';
   styleUrl: './prediction-results-display.component.css'
 })
 export class PredictionResultsDisplayComponent {
+
+  showChart: boolean = true;
+
   constructor(private router: Router, private route: ActivatedRoute, private http: HttpClient) {}
 
   modelName: string = '';
@@ -24,7 +27,6 @@ export class PredictionResultsDisplayComponent {
   public chart: any;
 
   createChart(){
-  
     this.chart = new Chart("resultsChart", {
       type: 'line',
 
@@ -49,14 +51,32 @@ export class PredictionResultsDisplayComponent {
     this.modelName = this.route.snapshot.paramMap.get('modelName')!;
     console.log(this.modelName);
 
-    localStorage.getItem('predictedValues')!.split(",").forEach(number => this.predictedValues.push(Number(number)));
-
-    this.predictedValues.forEach(number => this.labels.push(this.predictedValues.indexOf(number)));
-
-    this.createChart();
+    this.http.get<any>('http://localhost:8080/models/name=' + this.modelName).subscribe(
+    (response) => {
+      try {
+          this.predictedValues = response.predictionResults.predictionValues;
+      
+          console.log("Predicted Values: ", this.predictedValues);
+      
+          this.predictedValues.forEach(number => this.labels.push(this.predictedValues.indexOf(number)));
+      
+          this.createChart();
+      } catch (error) {
+        this.showChart = false;
+      }
+      
+    },
+    (error) => {
+      console.error('Error while returning model by name', error);
+    }
+    );
   }
 
   returnToMyModels(): void {
     this.router.navigate(['/my-models']);
   }
+
+  navigateToFileUpload(modelName: string) {
+    this.router.navigate(['/file-upload', modelName]);
+  };
 }

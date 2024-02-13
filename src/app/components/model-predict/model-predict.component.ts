@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MlModel } from '../my-models/my-models.component';
 import { CommonModule } from '@angular/common';
+import { NotificationService } from '../notification/notification.service';
 
 export class ModelPredictData {
   name: string = '';
@@ -38,17 +39,27 @@ export class ModelPredictComponent {
   scrollStart: string = '1';
   scrollEnd: string = '10000';
   fileIndexes: string[] = [];
+  modelName: string = '';
 
-  constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router) {}
+  constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router, private notificationService: NotificationService) {}
 
   ngOnInit(){
-    this.loadFileInfoFromEndpoint();
-    this.model = JSON.parse(localStorage.getItem("modelForPredicting")!);
-    this.modelData.name = this.model.name;
-    this.modelData.signalsToPredict = this.transformArrayIntoString(this.model.signalsToPredict);
-    this.modelData.signalsWithInfluence = this.transformArrayIntoString(this.model.signalsWithInfluence);
-    this.modelData.pastSteps = this.model.pastSteps;
-    this.getAllIndexesFromFile();
+    this.modelName = this.route.snapshot.paramMap.get('modelName')!;
+    this.http.get<any>('http://localhost:8080/models/name=' + this.modelName).subscribe(
+    (response) => {
+      console.log(response)
+      this.loadFileInfoFromEndpoint(); 
+      this.modelData.name = response.name;
+      console.log(response.signalsToPredict)
+      this.modelData.signalsToPredict = this.transformArrayIntoString(response.signalsToPredict);
+      this.modelData.signalsWithInfluence = this.transformArrayIntoString(response.signalsWithInfluence);
+      this.modelData.pastSteps = response.pastSteps;
+      this.getAllIndexesFromFile();
+    },
+    (error) => {
+      console.error('Error while returning model by name', error);
+    }
+    );
   };
 
   rangeValueChangedLeft(): void {
@@ -129,8 +140,6 @@ export class ModelPredictComponent {
     this.modelData.selectedTimeInterval.push(this.stiStart);
     this.modelData.selectedTimeInterval.push(this.stiEnd);
 
-    console.log(this.modelData.selectedTimeInterval)
-
     const model = {
       name: this.modelData.name,
       predictingDataFile: {
@@ -147,16 +156,35 @@ export class ModelPredictComponent {
 
     console.log(model);
 
-    this.http.post<any>('http://localhost:8080/models/predict', model).subscribe(
-      (response) => {
-        console.log('Model predicted successfully', response);
-        localStorage.setItem('predictedValues', response.predictedValues);
+    this.router.navigate(['/my-models']);
 
-        this.router.navigate(['prediction-results/', model.name]);
-      },
-      (error) => {
-        console.error('Error while predicting the model', error);
-      }
-    );
+    this.notificationService.createInfoNotification(model,'Data is being predicted using the model..');
+
+    this.predictAsync(model)
+      .then((response) => {
+        console.log(response);
+        this.notificationService.closeNotification(model);
+        this.notificationService.createSuccesNotification(model, 'Predictions have been made successfully!');
+      })
+      .catch((error) => {
+        console.error('Error while predicting using the model', error);
+      })
+      .finally(() => {
+
+      });
+  }
+
+  async predictAsync(model: any): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.http.post<any>('http://localhost:8080/models/predict', model)
+        .subscribe(
+          (response) => {
+            resolve(response);
+          },
+          (error) => {
+            reject(error);
+          }
+        );
+    });
   }
 }

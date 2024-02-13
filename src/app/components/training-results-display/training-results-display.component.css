@@ -1,5 +1,5 @@
 .container {
-    
+    top:10%;
 }
 
 #chart {
@@ -30,7 +30,7 @@ button {
 
 h2 {
     position: absolute;
-    top: 1%;
+    top: 7%;
     left: 7%;
     transform: translate(-50%, -50%);
 }

@@ -1,11 +1,18 @@
 <div class="container">
     <h2>{{ modelName }}</h2>
 
-    <div id="chart">
+    <div id="chart" *ngIf="showChart">
         <canvas id="resultsChart"> {{ chart }} </canvas>
+    </div>
+
+    <div *ngIf="!showChart">
+        <h2>No predictions have been made using this model</h2>
     </div>
 
     <div class="options"> 
     <button (click)="returnToMyModels()">Return to My Models</button>
+    <button (click)="navigateToFileUpload(modelName)">Make new prediction</button>
     </div>
 </div>
+
+

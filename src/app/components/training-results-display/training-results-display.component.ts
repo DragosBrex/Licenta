@@ -4,6 +4,7 @@ import { Chart } from 'chart.js/auto';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { MlModel } from '../my-models/my-models.component';
 
 @Component({
   selector: 'app-training-results-display',
@@ -19,6 +20,7 @@ export class TrainingResultsDisplayComponent {
   modelName: string = '';
   trainingActualValues: number[] = [];
   trainingPredictedValues: number[] = [];
+  accuracyScore: number = 0;
 
   labels: number[] = [];
 
@@ -53,36 +55,28 @@ export class TrainingResultsDisplayComponent {
 
   ngOnInit() {
     this.modelName = this.route.snapshot.paramMap.get('modelName')!;
-    console.log(this.modelName);
 
-    this.http.get<string[]>('http://localhost:8080/models/name=' + this.modelName).subscribe(
+    this.http.get<any>('http://localhost:8080/models/name=' + this.modelName).subscribe(
     (response) => {
-      console.log(response)
+      
+      this.trainingActualValues = response.trainingTestingResults.actualValues;
+      this.trainingPredictedValues = response.trainingTestingResults.predictedValues;
+      this.accuracyScore = response.trainingTestingResults.accuracy;
+      console.log(response.trainingTestingResults.accuracy)
+
+      let contor = 1;
+      this.trainingActualValues.forEach(() => this.labels.push(contor++));
+
+      this.createChart();
     },
     (error) => {
       console.error('Error while returning model by name', error);
     }
-  );
-
-
-
-    this.trainingActualValues.forEach(number => this.labels.push(this.trainingActualValues.indexOf(number)));
-
-    this.createChart();
-  }
-
-  returnToHomePage(): void {
-    this.router.navigate(['home']);
-  }
-
-  deleteModel(): void {
-    this.http.delete<any>('http://localhost:8080/models/deleteName/' + this.modelName).subscribe(
-      (response) => {
-        this.router.navigate(['/home']);
-      },
-      (error) => {
-        console.error('Error while deleting the model', error);
-      }
     );
   }
+
+  returnToMyModels(): void {
+    this.router.navigate(['/my-models']);
+  }
+
 }

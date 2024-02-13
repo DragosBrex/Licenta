@@ -1,18 +1,158 @@
 .container {
-  width: 40%; 
+  width: 50%; 
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  background-color: #f9f9f9
+  background-color: #f9f9f9;
 }
 
+.model-name {
+  width: 49%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.model-name label {
+  padding-top: 5px;
+}
+
+.model-name input {
+  width: 260px;
+  border-radius: 5px;
+}
+
+.timespan {
+  margin-top: 30px;
+  width: 49%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.timespan label {
+  margin-top: 5px;
+}
+
+.timespan input {
+  width: 150px;
+  border-radius: 5px;
+}
+
+.parameter-container {
+  margin-top: 30px;
+}
+
+.parameter-container .steps {
+  display: flex;
+  justify-content: space-between;
+}
+
+.step {
+  width: 49%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.step input {
+  width: 150px;
+  border-radius: 5px;
+}
+
+.parameter-container .algo {
+  display: flex;
+  justify-content: space-between;
+}
+
+.algitem {
+  width: 49%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.algitem input {
+  width: 150px;
+  border-radius: 5px;
+}
+
+.signal-container {
+  margin-top: 20px;
+  background-color: rgba(241, 241, 241, 0.907);
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.signal-container .data-predict {
+  width: 50%;
+  box-sizing: border-box;
+  padding: 10px;
+}
+
+.signal-container .data-influence {
+  width: 50%;
+  box-sizing: border-box;
+  padding: 10px;
+}
+
+.signal-container .separator {
+  background-color: rgba(182, 173, 173, 0.458);
+  width: 2px;
+}
+
+.signalsToPredict {
+  height: 40px;
+  padding-top: 10px;
+}
+
+.signal-container select {
+  width: 120px;
+}
+
+.signalsToPredict button {
+  float: right;
+}
+
+.signalsToPredict text {
+}
+
+.signalsWithInfluence {
+  height: 40px;
+  padding-top: 10px;
+}
+
+.signalsWithInfluence button {
+  float: right;
+}
+
+.invalid {
+  animation: shake 0.1635s 0s 3;
+  border-color: red;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    translate: 0;
+  }
+  25% {
+    translate: 8px 0;
+  }
+  75% {
+    translate: -8px 0;
+  }
+}
+
+.error {
+  color: red;
+}
 
 form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
+  margin-top: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
   
 form label {
   display: block;
@@ -27,7 +167,7 @@ form input {
 }
   
 form button {
-  background-color: #4caf50;
+  background-color: #266826;
   color: white;
   padding: 10px;
   border: none;
@@ -36,7 +176,39 @@ form button {
 }
   
 form button:hover {
-  background-color: #45a049;
+  background-color: hsl(0, 0%, 27%);
+}
+
+form .preview-disabled {
+  background-color: #bababa;
+}
+
+form .preview-disabled:hover {
+  background-color: #bababa; 
+}
+
+form .correlation {
+  float: right;
+}
+
+form .correlation-disabled {
+  float: right;
+  background-color: #bababa;
+}
+
+form .correlation-disabled:hover {
+  background-color: #bababa;
+}
+
+form .loading-animation {
+  float: right;
+  background-color: #bababa;
+  width: 116px;
+  height: 35px;
+}
+
+form .loading-animation:hover {
+  background-color: #bababa;
 }
 
 .animation {
@@ -49,6 +221,7 @@ form button:hover {
 }
 
 .selectedTimeInterval {
+  margin-top: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -56,6 +229,12 @@ form button:hover {
   background: rgb(241, 241, 241);
   border-radius: 10px;
   padding: 10px 15px 10px;
+}
+
+.title {
+  position: absolute;
+  margin-top: 30px;
+  margin-left: 10px;
 }
 
 .time-input {
@@ -83,7 +262,7 @@ form button:hover {
   text-align: center;
   margin-left: 12px;
   border-radius: 5px;
-  border: 1px solid #999;
+  border: 1px solid #999999;
 }
 
 .time-input .separator {
@@ -110,7 +289,7 @@ form button:hover {
   right: 0%;
   position: absolute;
   border-radius: 5px;
-  background: rgb(77, 77, 183);
+  background: #266826;
 }
 
 .range-input {
@@ -132,7 +311,7 @@ input[type="range"]::-webkit-slider-thumb {
   border-radius: 50%;
   pointer-events: auto;
   -webkit-appearance: none;
-  background: rgb(77, 77, 183);
+  background: #266826;
 }
 input[type="range"]::-moz-range-thumb {
   height: 17px;
@@ -141,6 +320,14 @@ input[type="range"]::-moz-range-thumb {
   border-radius: 50%;
   pointer-events: auto;
   -moz-appearance: none;
-  background: rgb(77, 77, 183);
+  background: #266826;
+}
+
+.preview {
+  margin-left: 20px;
+}
+
+.preview-disabled {
+  margin-left: 20px;
 }
 

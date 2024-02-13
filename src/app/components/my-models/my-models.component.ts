@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { MatDialog, MatDialogModule} from '@angular/material/dialog'
 import { ModelInfoComponent } from '../model-info/model-info.component';
+import { AppComponent } from '../../app.component';
 
 export class MlModel {
   name: string = '';
@@ -26,13 +27,15 @@ export class MyModelsComponent {
   models: MlModel[] = [];
   //mlModel: MlModel = new MlModel;
 
-  constructor(private http: HttpClient, private router: Router, private dialog: MatDialog) {};
+  constructor(private http: HttpClient, private router: Router, private dialog: MatDialog, private app: AppComponent) {};
 
   openDialog(model: MlModel) {
     this.dialog.open(ModelInfoComponent, {data: model});
   }
 
   ngOnInit() {
+    this.app.changeActiveNavPage("my-models");
+    
     this.http.get<any[]>('http://localhost:8080/models/all').subscribe(
       (response) => {
         console.log("Received models: ", response);
