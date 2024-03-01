@@ -1,11 +1,35 @@
 <div class="container">
-    <h2>{{ modelName }}</h2>
-
-    <div id="chart">
-        <canvas id="resultsChart"> {{ chart }} </canvas>
+    <div class="left-container">
+        <h2><b>Training results: </b>{{modelName}}</h2>
+        <div id="chart">
+            <canvas id="resultsChart"> {{ chart }} </canvas>
+        </div>
+        <div class="accuracy">
+            <h2>Results accuracy: {{accuracyScore}}%</h2>
+        </div>
     </div>
 
-    <div class="options"> 
-    <button (click)="returnToMyModels()">Return to My Models</button>
+    <div class="right-container"> 
+        <div class="parameter">
+            <label>Data to Predict:</label>
+            <ul class="list">
+              <li *ngFor="let signal of model.signalsToPredict">{{ signal }}</li>
+            </ul>
+          </div>
+        <div class="parameter">
+            <label>Data with Influence:</label>
+            <ul class="list">
+                <li *ngFor="let signal of model.signalsWithInfluence">{{ signal }}</li>
+            </ul>
+        </div>
+        <div class="parameter">
+            <label>Past Steps:</label>
+            <span>{{ model.pastSteps }}</span>
+        </div>
+        <div class="parameter">
+            <label>Future Steps:</label>
+            <span>{{ model.futureSteps }}</span>
+        </div>
+        <button (click)="returnToMyModels()">Return to My Models</button>
     </div>
 </div>

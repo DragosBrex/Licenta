@@ -18,11 +18,12 @@ export class HomePageComponent {
 
   ngOnInit() {
     // const model = new MlModel;
-    // model.name = "Model: Test";
-    // this.notificationService.createInfoNotification(model, "Merge bine frate bmw-ul asta, dar mi-e frica tare rau de injectoarele astea");
-    // this.notificationService.createInfoNotification(model, "Merge bine frate bmw-ul asta");
+    // model.name = "Test";
+    // this.notificationService.createInfoNotification(model, "<a href='my-models'> link </a>");
+    // this.notificationService.createInfoNotification(model, "<i>Merge bine frate bmw-ul asta</i>");
 
     this.app.changeActiveNavPage("home");
+    this.app.animateBody("animation-down");
   }
 
   navigateToMyModels() {

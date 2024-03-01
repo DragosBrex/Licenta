@@ -1,33 +1,96 @@
 .ml-model-container {
-    max-width: 400px;
+    max-width: 700px;
+    max-height: 600;
     margin: auto;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 5px;
-  }
-  
-  .parameter {
-    margin-bottom: 15px;
-  }
-  
-  label {
-    font-weight: bold;
-    display: block;
-    margin-bottom: 5px;
-  }
-  
-  ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  li {
-    margin-bottom: 5px;
-  }
-  
-  span {
-    display: inline-block;
-    padding: 3px 8px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-  }
+    display: flex;
+    justify-content: center;
+}
+
+.exit {
+  background-color: #b70a0a;
+}
+
+.left-container {
+  width: 300px;
+}
+
+.right-container {
+  position: relative;
+  width: 200px;
+}
+
+.parameter {
+  margin-top: 15px;
+  margin-left: 10px;
+}
+
+label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
+
+ul {
+  background-color: #e7e7e739;
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  margin-bottom: 5px;
+}
+
+.list {
+  overflow-y: auto;
+  max-height: 150px;
+}
+
+li:hover {
+  background-color: #e7e7e7c1;
+}
+
+span {
+  display: inline-block;
+  padding: 3px 8px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar {
+  width: 5px; 
+}
+
+::-webkit-scrollbar-track {
+  background-color: #dcdcdc;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #888; 
+  border-radius: 5px; 
+}
+
+button {
+  position: absolute;
+  margin-top: 0px;
+  right: 0px;
+  left: 20px;
+  background-color: #266826;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: hsl(0, 0%, 27%);
+}
+
+.separator {
+  background-color: rgba(167, 167, 167, 0.356);
+  width: 2px;
+  margin-left: 5px;
+}

@@ -8,6 +8,7 @@ import { NotificationService } from '../notification/notification.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DataPreviewComponent } from '../data-preview/data-preview.component';
 import { _isNumberValue } from '@angular/cdk/coercion';
+import { AppComponent } from '../../app.component';
 
 export class ModelFormData {
   name: string = '';
@@ -58,14 +59,19 @@ export class ModelFormComponent {
   signalsWithInfluenceInvalid: boolean = false;
   canBeTrained: boolean = true;
   correlationAnimation: boolean = false;
+  allModelNames: string[] = [];
+  nameError: boolean = false;
   
 
-  constructor(private http: HttpClient, private router: Router, private notificationService: NotificationService, private dialog: MatDialog) {}
+  constructor(private http: HttpClient, private router: Router, private notificationService: NotificationService, private dialog: MatDialog, private app: AppComponent) {}
 
   ngOnInit() {
+    this.app.changeActiveNavPage("create-model");
+    this.app.animateBody("animation-left")
     this.loadColumnsFromEndpoint();
     this.loadFileInfoFromEndpoint();
     this.getAllIndexesFromFile();
+    this.readAllModels();
   }
 
   openDialog(toPredict: string) {
@@ -77,7 +83,28 @@ export class ModelFormComponent {
         this.dialog.open(DataPreviewComponent, {data: [this.trainingFileID, this.selectedSignalsWithInfluence]});
         break;
     }
+  }
 
+  readAllModels() {
+    this.http.get<any[]>('http://localhost:8080/models/all').subscribe(
+      (response) => {
+        response.forEach((item) => {
+          this.allModelNames.push(item.name)
+        })
+      },
+      (error) => {
+        console.error('Error while reading all models', error);
+      }
+    );
+  }
+
+  checkModelName() {
+    if(this.allModelNames.includes((this.modelData.name))) {
+      this.nameError = true;
+    }
+    else {
+      this.nameError = false;
+    }
   }
 
   getCorrelationData() {
@@ -90,14 +117,16 @@ export class ModelFormComponent {
   
     this.getCorrelationDataAsync(correlationData)
       .then(response => {
+        console.log(response) //ASta trebuie sa il stergi mai tarziu
         this.correlationAnimation = false;
   
         this.selectedSignalsWithInfluence = [];
   
         this.columns.forEach((value) => {
-          console.log(value)
-          if (response!.toString().includes(value.toString()))
+          if (response!.toString().includes(value.toString())) {
             this.selectedSignalsWithInfluence.push(value);
+            this.columnsInfluence.splice(this.columnsInfluence.indexOf(value), 1);
+          }
         });
       })
       .catch(error => {
@@ -151,10 +180,6 @@ export class ModelFormComponent {
     if(this.stiStart == '')
       this.scrollStart = this.inputMinVal.toString();
     else {
-      if(Number(this.stiEnd) - Number(this.stiStart) < this.timeGap) {
-       this.stiStart = (Number(this.stiEnd) - this.timeGap).toString()
-    }
-
       this.scrollStart = this.stiStart;
       const progress = document.getElementById("progress");
       progress!.style.left = (Number(this.scrollStart) / Number(this.inputMaxVal)) * 100 + "%";
@@ -168,14 +193,21 @@ export class ModelFormComponent {
       progress!.style.right = 100 - (Number(this.scrollEnd) / this.inputMaxVal) * 100 + "%";
     }
     else {
-      if(Number(this.stiEnd) - Number(this.stiStart) < this.timeGap) {
-       this.stiEnd = (Number(this.stiStart) + this.timeGap).toString()
-      } 
-
       this.scrollEnd = this.stiEnd;
       const progress = document.getElementById("progress");
       progress!.style.right = 100 - (Number(this.scrollEnd) / this.inputMaxVal) * 100 + "%";
     }
+  }
+  
+  fixInputLeftWithTimeGap() {
+    if(Number(this.stiEnd) - Number(this.stiStart) < this.timeGap) 
+      this.stiStart = (Number(this.stiEnd) - this.timeGap).toString()
+  }
+
+  fixInputRightWithTimeGap() {
+    if(Number(this.stiEnd) - Number(this.stiStart) < this.timeGap) {
+      this.stiEnd = (Number(this.stiStart) + this.timeGap).toString()
+     } 
   }
   
   loadColumnsFromEndpoint(): void {
@@ -318,7 +350,7 @@ export class ModelFormComponent {
   
     this.modelData.signalsToPredict = this.transformArrayIntoString(this.selectedSignalsToPredict);
     this.modelData.signalsWithInfluence = this.transformArrayIntoString(this.selectedSignalsWithInfluence);
-  
+
     const model = {
       name: this.modelData.name,
       trainingAndTestingDataFile: {
@@ -342,13 +374,13 @@ export class ModelFormComponent {
   
     this.router.navigate(['/home']);
 
-    this.notificationService.createInfoNotification(model,'Your model is being trained..');
+    this.notificationService.createInfoNotification(model,'<i>Your model is being trained..<i>');
 
     this.trainAndTestAsync(model)
       .then((response) => {
         console.log(response);
         this.notificationService.closeNotification(model);
-        this.notificationService.createSuccesNotification(model, 'Your model has trained successfully! \nCheck \"My Models\" for more information.');
+        this.notificationService.createSuccesNotification(model, "<i>Your model was trained successfully! \nCheck <a href='my-models'>My Models</a> for more information.</i>");
       })
       .catch((error) => {
         console.error('Error while training and testing the model', error);
@@ -358,7 +390,7 @@ export class ModelFormComponent {
       });
   }
   
-  async trainAndTestAsync(model: MlModel): Promise<any> {
+  async trainAndTestAsync(model: any): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       this.http.post<any>('http://localhost:8080/models/train', model)
         .subscribe(

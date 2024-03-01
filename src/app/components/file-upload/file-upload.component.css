@@ -1,6 +1,6 @@
 .file-upload {
     position: absolute;
-    top: 50%;
+    top: 45%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
@@ -9,4 +9,13 @@ img {
     width: 310px;
     background-color: rgba(209, 209, 209, 0.466);
     border-radius: 20px;
+}
+
+.container {
+    justify-content: center;
+    text-align: center;
+}
+
+.container h2 {
+    padding-top: 90px;
 }

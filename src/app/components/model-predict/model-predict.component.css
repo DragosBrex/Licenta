@@ -1,19 +1,128 @@
-.container {
-  width: 40%; 
-  height: 100%;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #f9f9f9
+.content {
+  overflow: hidden;
+  max-height: 700px;
 }
 
+.container {
+  width: 50%; 
+  padding: 20px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.timespan {
+  margin-top: 30px;
+  width: 49%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.timespan label {
+  margin-top: 5px;
+}
+
+.timespan input {
+  width: 150px;
+  border-radius: 5px;
+}
+
+.signal-container {
+  position: relative;
+  max-height: 280px;
+  margin-top: 20px;
+  background-color: rgba(241, 241, 241, 0.907);
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  overflow-y: auto;
+}
+
+::-webkit-scrollbar {
+  width: 5px; 
+}
+
+::-webkit-scrollbar-track {
+  background-color: #dcdcdc;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #888; 
+  border-radius: 5px; 
+}
+
+.signal-container .data-predict {
+  width: 50%;
+  box-sizing: border-box;
+  padding: 10px;
+}
+
+.data-predict div:hover {
+  background-color: #e7e7e7c1;
+}
+
+.signal-container .data-influence {
+  width: 50%;
+  box-sizing: border-box;
+  padding: 10px;
+}
+
+.data-influence div:hover {
+  background-color: #e7e7e7c1;
+}
+
+.signal-container .separator {
+  background-color: rgba(182, 173, 173, 0.458);
+  width: 2px;
+  align-self: stretch;
+}
+
+.signalsToPredict {
+  height: 40px;
+  padding-top: 10px;
+}
+
+.signalsWithInfluence {
+  height: 40px;
+  padding-top: 10px;
+}
+
+.signalsWithInfluence button {
+  float: right;
+}
+
+.parameter-container {
+  margin-top: 30px;
+}
+
+.parameter-container .steps {
+  display: flex;
+  justify-content: space-around;
+}
+
+.step {
+  width: 33%;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.step input {
+  width: 100px;
+  border-radius: 5px;
+  margin-left: -10px;
+}
+
+.step label {
+  padding-top: 5px;
+}
 
 form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
+  margin-top: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
   
 form label {
   display: block;
@@ -28,7 +137,7 @@ form input {
 }
   
 form button {
-  background-color: #4caf50;
+  background-color: #266826;
   color: white;
   padding: 10px;
   border: none;
@@ -37,19 +146,33 @@ form button {
 }
   
 form button:hover {
-  background-color: #45a049;
+  background-color: hsl(0, 0%, 27%);
 }
 
-.animation {
-  background-color: inherit;
-  border: none;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+form .preview-disabled {
+  background-color: #bababa;
+}
+
+form .preview-disabled:hover {
+  background-color: #bababa; 
+}
+
+form .correlation {
+  float: right;
+}
+
+form .correlation-disabled {
+  float: right;
+  background-color: #bababa;
+}
+
+form .correlation-disabled:hover {
+  background-color: #bababa;
 }
 
 .selectedTimeInterval {
+  position: relative;
+  margin-top: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -58,6 +181,15 @@ form button:hover {
   border-radius: 10px;
   padding: 10px 15px 10px;
 }
+
+.selectedTimeInterval label {
+  position: absolute;
+  width: 161px;
+  margin-left: -43px;
+  margin-top: -17px;
+}
+
+
 
 .time-input {
   width: 100%;
@@ -84,7 +216,7 @@ form button:hover {
   text-align: center;
   margin-left: 12px;
   border-radius: 5px;
-  border: 1px solid #999;
+  border: 1px solid #999999;
 }
 
 .time-input .separator {
@@ -111,7 +243,7 @@ form button:hover {
   right: 0%;
   position: absolute;
   border-radius: 5px;
-  background: rgb(77, 77, 183);
+  background: #266826;
 }
 
 .range-input {
@@ -133,7 +265,7 @@ input[type="range"]::-webkit-slider-thumb {
   border-radius: 50%;
   pointer-events: auto;
   -webkit-appearance: none;
-  background: rgb(77, 77, 183);
+  background: #266826;
 }
 input[type="range"]::-moz-range-thumb {
   height: 17px;
@@ -142,6 +274,9 @@ input[type="range"]::-moz-range-thumb {
   border-radius: 50%;
   pointer-events: auto;
   -moz-appearance: none;
-  background: rgb(77, 77, 183);
+  background: #266826;
 }
 
+.predict-button {
+  margin-top: 10px;
+}

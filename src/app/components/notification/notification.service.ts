@@ -21,6 +21,7 @@ export class NotificationService {
       positionClass: 'toast-top-right',
       toastClass: 'notification',
       newestOnTop: true,
+      enableHtml: true
     });
 
     this.notificationList.push([notification, model]);
@@ -34,7 +35,8 @@ export class NotificationService {
       tapToDismiss: false,
       positionClass: 'toast-top-right',
       toastClass: 'notification',
-      newestOnTop: true
+      newestOnTop: true,
+      enableHtml: true
     });
   }
 

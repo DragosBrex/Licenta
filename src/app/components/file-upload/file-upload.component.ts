@@ -23,6 +23,7 @@ export class FileUploadComponent {
 
   ngOnInit() {
     this.app.changeActiveNavPage("create-model");
+    this.app.animateBody("animation-left")
     this.modelName = this.route.snapshot.paramMap.get('modelName')!;
   };
 

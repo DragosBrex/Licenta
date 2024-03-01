@@ -21,6 +21,7 @@ import { Injectable } from '@angular/core';
 export class ModelInfoComponent {
 
   //areYouSureDialog: MatDialogRef<AreYouSureComponent>;
+  isAPredictionMade: boolean = false;
 
   constructor(@Inject(MAT_DIALOG_DATA) public model: MlModel, 
                 private dialog: MatDialog, private router: Router, 
@@ -37,7 +38,6 @@ export class ModelInfoComponent {
 
   closeAreYouSure() {
     this.areYouSureDialog.close();
-    
   }
 
   navigateToFileUpload(model: MlModel) {
@@ -51,8 +51,14 @@ export class ModelInfoComponent {
   }
 
   navigateToPredictionResults(model: MlModel) {
-    this.router.navigate(['/prediction-results/' + model.name]);
-    this.closeDialog();
+    if(model.predictionResults == null) {
+      this.navigateToFileUpload(model);
+      this.closeDialog();
+    }
+    else {
+      this.router.navigate(['/prediction-results/' + model.name]);
+      this.closeDialog();
+    }
   }
 
 }

@@ -1,93 +1,97 @@
-<form>
-  <div class="container">
-    <div class="model-name">
-      <label for="mlModelName">ML Model Name </label>
-      <input [ngClass]="nameInvalid? 'invalid' : ''" [(ngModel)]="modelData.name" name="name" (ngModelChange)="changeClass('name')" required />
-    </div>
+<div class="content">
+  <form>
+    <div class="container">
+      <div class="model-name">
+        <label for="mlModelName">ML Model Name </label>
+        <input [ngClass]="nameInvalid? 'invalid' : ''" [(ngModel)]="modelData.name" name="name" (ngModelChange)="changeClass('name')" (input)="checkModelName()" required />
+        <span *ngIf="nameError" class="error">*Each model should have a unique name</span>
+      </div>
 
-    <label class="title">Selected Time Interval</label>
-    <div class="selectedTimeInterval">  
-      <div class="wrapper">
-        <div class="time-input">
-          <div class="field">
-            <span>From</span>
-            <input [(ngModel)]="stiStart" name="stiStart" type="text" class="input-min" (input)="inputValueChangedLeft()">
+      <div class="selectedTimeInterval">  
+        <div class="wrapper">
+          <label class="title">Selected Time Interval</label>
+          <div class="time-input">
+            <div class="field">
+              <span>From</span>
+              <input [(ngModel)]="stiStart" name="stiStart" type="text" class="input-min" (input)="inputValueChangedLeft()" (blur)="fixInputLeftWithTimeGap()">
+            </div>
+            <div class="separator">-</div>
+            <div class="field">
+              <span>To</span>
+              <input [(ngModel)]="stiEnd" name="stiEnd" type="text" class="input-max" (input)="inputValueChangedRight()" (blur)="fixInputRightWithTimeGap()">
+            </div>
           </div>
-          <div class="separator">-</div>
-          <div class="field">
-            <span>To</span>
-            <input [(ngModel)]="stiEnd" name="stiEnd" type="text" class="input-max" (input)="inputValueChangedRight()">
+          <div class="slider">
+            <div class="progress" id="progress"></div>
+          </div>
+          <div class="range-input">
+            <input [(ngModel)]="scrollStart" name="scrollStart" type="range" class="range-min"  id="range-min" [min]="inputMinVal" [max]="inputMaxVal" value="1" (input)="rangeValueChangedLeft()">
+            <input [(ngModel)]="scrollEnd" name="scrollEnd" type="range" class="range-max" id="range-max" [min]="inputMinVal" [max]="inputMaxVal" value="100"  (input)="rangeValueChangedRight()">
           </div>
         </div>
-        <div class="slider">
-          <div class="progress" id="progress"></div>
+      </div>
+      
+
+      <div class="timespan">
+          <label for="timeSpan">Time Span </label>
+          <input [(ngModel)]="modelData.timeSpan" name="timeSpan" type="number" min="1" required />
+      </div>
+
+      <div class="signal-container">
+        <div class="data-predict">
+          <label for="signalsToPredict">Data to Predict</label>
+          <select [ngClass]="signalsToPredictInvalid? 'invalid' : ''" [(ngModel)]="selectedPredict" name="signalsToPredict" (change)="updateSelectedSignalsToPredictList()"required>
+            <option selected="selected" value='default'></option>
+            <option *ngFor="let column of columnsPredict" [value]="column">{{ column }}</option>
+          </select>
+          <button [disabled]="!(selectedSignalsToPredict.length > 0)" [ngClass]="!(selectedSignalsToPredict.length > 0) ? 'preview-disabled' : 'preview'" (click)="openDialog('predict')">Preview Data</button>
+          <div class="signalsToPredict" *ngFor="let signal of selectedSignalsToPredict"> {{signal}} <button (click)="deleteSignalFromList('selectedSignalsToPredict', signal)">X</button> </div>
+          
         </div>
-        <div class="range-input">
-          <input [(ngModel)]="scrollStart" name="scrollStart" type="range" class="range-min"  id="range-min" [min]="inputMinVal" [max]="inputMaxVal" value="1" (input)="rangeValueChangedLeft()">
-          <input [(ngModel)]="scrollEnd" name="scrollEnd" type="range" class="range-max" id="range-max" [min]="inputMinVal" [max]="inputMaxVal" value="100"  (input)="rangeValueChangedRight()">
+        <div class="separator"></div>
+        <div class="data-influence">
+          <label for="signalsWithInfluence">Data with Influence</label>
+          <select [ngClass]="signalsWithInfluenceInvalid? 'invalid' : ''" [(ngModel)]="selectedInfluence" name="signalsWithInfluence" (change)="updateSelectedSignalsWithInfluenceList()" required>
+            <option selected="selected" value='default'></option>
+            <option *ngFor="let column of columnsInfluence" [value]="column">{{ column }}</option>
+          </select>
+          <button [disabled]="!(selectedSignalsWithInfluence.length > 0)" [ngClass]="!(selectedSignalsWithInfluence.length > 0) ? 'preview-disabled' : 'preview'" (click)="openDialog('influence')">Preview Data</button>
+          <button *ngIf="!correlationAnimation" [disabled]="!(selectedSignalsToPredict.length > 0)" [ngClass]="!(selectedSignalsToPredict.length > 0) ? 'correlation-disabled' : 'correlation'" (click)="getCorrelationData()">Correlation Data</button>
+          <button *ngIf="correlationAnimation" class="loading-animation"><img src="https://i.gifer.com/ZKZg.gif" width="20px"></button>
+          <div class="signalsWithInfluence" *ngFor="let signal of selectedSignalsWithInfluence"> {{signal}} <button (click)="deleteSignalFromList('selectedSignalsWithInfluence', signal)">X</button> </div>
+          
         </div>
       </div>
+
+      <div class="parameter-container">
+        <div class="steps">
+          <div class="step">
+            <label for="pastSteps">Past Steps </label>
+            <input [(ngModel)]="modelData.pastSteps" name="pastSteps" type="number" min="1" required />
+          </div>
+          <div class="step">
+            <label for="futureSteps">Future Steps </label>
+            <input [(ngModel)]="modelData.futureSteps" name="futureSteps" type="number" min="1" required />
+          </div>
+        </div>
+
+        <div class="algo">
+          <div class="algitem">
+            <label for="trainTestSplit">Train Test Split </label>
+            <input [(ngModel)]="modelData.trainTestSplit" name="trainTestSplit" type="number" step="0.1" min="0.1" max="1" required />   
+          </div>
+          <div class="algitem">
+            <label for="epochs">Epochs </label>
+            <input [(ngModel)]="modelData.epochs" name="epochs" type="number" min="1" required />
+          </div>
+        </div>
+        <!-- <label for="algorithm">Algorithm </label>
+        <input [(ngModel)]="modelData.algorithm" name="algorithm" required /> -->
+
+      </div>
+
+      <button type="submit" (click)="submitForm()">Train and Test the Model</button><br>
+      <span class="error" *ngIf="nameInvalid || signalsToPredictInvalid || signalsWithInfluenceInvalid || nameError">Warning: Incomplete or Incorrect Form Submission</span>
     </div>
-
-    <div class="timespan">
-        <label for="timeSpan">Time Span </label>
-        <input [(ngModel)]="modelData.timeSpan" name="timeSpan" type="number" min="1" required />
-    </div>
-
-    <div class="signal-container">
-      <div class="data-predict">
-        <label for="signalsToPredict">Signals to Predict</label>
-        <select [ngClass]="signalsToPredictInvalid? 'invalid' : ''" [(ngModel)]="selectedPredict" name="signalsToPredict" (change)="updateSelectedSignalsToPredictList()"required>
-          <option selected="selected" value='default'></option>
-          <option *ngFor="let column of columnsPredict" [value]="column">{{ column }}</option>
-        </select>
-        <button [disabled]="!(selectedSignalsToPredict.length > 0)" [ngClass]="!(selectedSignalsToPredict.length > 0) ? 'preview-disabled' : 'preview'" (click)="openDialog('predict')">Preview Data</button>
-        <div class="signalsToPredict" *ngFor="let signal of selectedSignalsToPredict"> {{signal}} <button (click)="deleteSignalFromList('selectedSignalsToPredict', signal)">X</button> </div>
-        
-      </div>
-      <div class="separator"></div>
-      <div class="data-influence">
-        <label for="signalsWithInfluence">Signals with Influence</label>
-        <select [ngClass]="signalsWithInfluenceInvalid? 'invalid' : ''" [(ngModel)]="selectedInfluence" name="signalsWithInfluence" (change)="updateSelectedSignalsWithInfluenceList()" required>
-          <option selected="selected" value='default'></option>
-          <option *ngFor="let column of columnsInfluence" [value]="column">{{ column }}</option>
-        </select>
-        <button [disabled]="!(selectedSignalsWithInfluence.length > 0)" [ngClass]="!(selectedSignalsWithInfluence.length > 0) ? 'preview-disabled' : 'preview'" (click)="openDialog('influence')">Preview Data</button>
-        <button *ngIf="!correlationAnimation" [disabled]="!(selectedSignalsToPredict.length > 0)" [ngClass]="!(selectedSignalsToPredict.length > 0) ? 'correlation-disabled' : 'correlation'" (click)="getCorrelationData()">Correlation Data</button>
-        <button *ngIf="correlationAnimation" class="loading-animation"><img src="https://i.gifer.com/ZKZg.gif" width="20px"></button>
-        <div class="signalsWithInfluence" *ngFor="let signal of selectedSignalsWithInfluence"> {{signal}} <button (click)="deleteSignalFromList('selectedSignalsWithInfluence', signal)">X</button> </div>
-        
-      </div>
-    </div>
-
-    <div class="parameter-container">
-      <div class="steps">
-        <div class="step">
-          <label for="pastSteps">Past Steps </label>
-          <input [(ngModel)]="modelData.pastSteps" name="pastSteps" type="number" min="1" required />
-        </div>
-        <div class="step">
-          <label for="futureSteps">Future Steps </label>
-          <input [(ngModel)]="modelData.futureSteps" name="futureSteps" type="number" min="1" required />
-        </div>
-      </div>
-
-      <div class="algo">
-        <div class="algitem">
-          <label for="trainTestSplit">Train Test Split </label>
-          <input [(ngModel)]="modelData.trainTestSplit" name="trainTestSplit" type="number" step="0.1" min="0.1" max="1" required />   
-        </div>
-        <div class="algitem">
-          <label for="epochs">Epochs </label>
-          <input [(ngModel)]="modelData.epochs" name="epochs" type="number" min="1" required />
-        </div>
-      </div>
-      <!-- <label for="algorithm">Algorithm </label>
-      <input [(ngModel)]="modelData.algorithm" name="algorithm" required /> -->
-
-    </div>
-
-    <button type="submit" (click)="submitForm()">Train and Test the Model</button><br>
-    <span class="error" *ngIf="nameInvalid || signalsToPredictInvalid || signalsWithInfluenceInvalid">*All fields need to be completed</span>
-  </div>
-</form>
+  </form>
+</div>

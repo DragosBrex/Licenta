@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Injectable } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -13,6 +13,7 @@ export class MlModel {
   pastSteps: number = 0;
   futureSteps: number = 0;
   algorithm: string = '';
+  predictionResults: string[] = [];
 }
 
 @Component({
@@ -21,6 +22,10 @@ export class MlModel {
   imports: [CommonModule, MatDialogModule],
   templateUrl: './my-models.component.html',
   styleUrl: './my-models.component.css'
+})
+
+@Injectable({
+  providedIn: 'root',
 })
 export class MyModelsComponent {
 
@@ -35,11 +40,13 @@ export class MyModelsComponent {
 
   ngOnInit() {
     this.app.changeActiveNavPage("my-models");
-    
+    this.app.animateBody("animation-right");
+    this.loadModels();
+  }
+
+  loadModels() {
     this.http.get<any[]>('http://localhost:8080/models/all').subscribe(
       (response) => {
-        console.log("Received models: ", response);
-
         response.forEach((model) => {if(model.name != '') 
         {
           const mlModel: MlModel = new MlModel;
@@ -49,7 +56,20 @@ export class MyModelsComponent {
           mlModel.pastSteps = model.pastSteps,
           mlModel.futureSteps = model.futureSteps,
           mlModel.algorithm = model.algorithm,
-          this.models.push(mlModel)}})
+
+          mlModel.signalsToPredict[0] = mlModel.signalsToPredict[0].substring(1);
+          mlModel.signalsToPredict[mlModel.signalsToPredict.length - 1] = 
+          mlModel.signalsToPredict[mlModel.signalsToPredict.length - 1].substring(0, mlModel.signalsToPredict[mlModel.signalsToPredict.length - 1].length - 1)
+
+          mlModel.signalsWithInfluence[0] = mlModel.signalsWithInfluence[0].substring(1);
+          mlModel.signalsWithInfluence[mlModel.signalsWithInfluence.length - 1] = 
+          mlModel.signalsWithInfluence[mlModel.signalsWithInfluence.length - 1].substring(0, mlModel.signalsWithInfluence[mlModel.signalsWithInfluence.length - 1].length - 1)
+
+          mlModel.predictionResults = model.predictionResults;
+
+          this.models.push(mlModel)
+        }})
+
         console.log(this.models)
       },
       (error) => {

@@ -22,6 +22,16 @@ export class AppComponent {
 
   constructor(private router: Router) {}
 
+  animateBody(animation: string) {
+    const page = document.getElementById("content")!
+    page.className = "";
+    page.style.opacity = "0";
+
+    setTimeout(() => {
+      page.className = animation;
+    }, 1);
+  }
+
   changeActiveNavPage(page: string) {
     const home = document.getElementById("nav-home");
     const models = document.getElementById("nav-models");

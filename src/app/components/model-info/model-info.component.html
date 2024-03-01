@@ -1,39 +1,39 @@
 <div class="ml-model-container">
+   <div class="left-container">      
     <h2>{{ model.name }}</h2>
-    
-    <div class="parameter">
-      <label>Signals to Predict:</label>
-      <ul>
-        <li *ngFor="let signal of model.signalsToPredict">{{ signal }}</li>
-      </ul>
+      <div class="parameter">
+        <label>Data to Predict:</label>
+        <ul class="list">
+          <li *ngFor="let signal of model.signalsToPredict">{{ signal }}</li>
+        </ul>
+      </div>
+      
+      <div class="parameter">
+        <label>Data with Influence:</label>
+        <ul class="list">
+          <li *ngFor="let signal of model.signalsWithInfluence">{{ signal }}</li>
+        </ul>
+      </div>
+      
+      <div class="parameter">
+        <label>Past Steps:</label>
+        <span>{{ model.pastSteps }}</span>
+      </div>
+      
+      <div class="parameter">
+        <label>Future Steps:</label>
+        <span>{{ model.futureSteps }}</span>
+      </div>
     </div>
-    
-    <div class="parameter">
-      <label>Signals with Influence:</label>
-      <ul>
-        <li *ngFor="let signal of model.signalsWithInfluence">{{ signal }}</li>
-      </ul>
+    <div class="separator"></div>
+    <div class="right-container">
+      <div class="parameter">
+        <button class="exit" (click)="closeDialog()"> Close Window</button><br><br>
+        <button (click)="navigateToTrainingResults(model)">Training Results</button><br><br>
+        <button (click)="navigateToPredictionResults(model)">Predict</button><br><br>
+        <button (click)="openAreYouSure(model)">Delete Model</button>
+      </div>
     </div>
-    
-    <div class="parameter">
-      <label>Past Steps:</label>
-      <span>{{ model.pastSteps }}</span>
-    </div>
-    
-    <div class="parameter">
-      <label>Future Steps:</label>
-      <span>{{ model.futureSteps }}</span>
-    </div>
-    
-    <div class="parameter">
-      <label>Algorithm:</label>
-      <span>{{ model.algorithm }}</span>
-    </div>
-
-    <button (click)="closeDialog()"> Close </button>
-    <button (click)="navigateToTrainingResults(model)">Training Results</button>
-    <button (click)="navigateToPredictionResults(model)">Predict</button>
-    <button (click)="openAreYouSure(model)">Delete Model</button>
 </div>
 
 

@@ -1,5 +1,8 @@
-<div class="file-upload" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
-    <img src="https://cdn3.iconfinder.com/data/icons/file-and-folder-fill-icons-set/144/File_Upload-512.png" (dragstart)="onDragStart($event)" draggable="true"><br>
-    <input type="file" (change)="onFileSelected($event)" />
-    <button (click)="uploadFile()">Upload</button>
+<div class="container">
+    <h2>Upload a new File</h2>
+    <div class="file-upload" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
+        <img src="https://cdn3.iconfinder.com/data/icons/file-and-folder-fill-icons-set/144/File_Upload-512.png" (dragstart)="onDragStart($event)" draggable="true"><br>
+        <input type="file" (change)="onFileSelected($event)" />
+        <button (click)="uploadFile()">Upload</button>
+    </div>
 </div>

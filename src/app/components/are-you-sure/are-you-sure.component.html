@@ -1,5 +1,5 @@
-<div>
-    <h3>Are you sure you want to delete "{{model.name}}"</h3>
-    <button (click)="closeDialog()">NO</button>
-    <button (click)="deleteModel()">YES</button>
+<div class="dialog">
+    <h3>Are you sure you want to delete the model: <i>{{model.name}}</i></h3>
+    <button class="button-no" (click)="closeDialog()">NO</button>
+    <button class="button-yes" (click)="deleteModel()">YES</button>
 </div>

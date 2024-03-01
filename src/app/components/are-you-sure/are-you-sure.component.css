@@ -1,0 +1,44 @@
+.dialog {
+    max-width: 500px;
+    max-height: 250px;
+    text-align: center;
+    word-wrap: break-word;
+}
+
+h3 {
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.button-no {
+    width: 100px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    background-color: #266826;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+  
+.button-no:hover {
+    background-color: hsl(0, 0%, 27%);
+}
+
+.button-yes {
+    width: 100px;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    background-color: #b70a0a;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+  
+.button-yes:hover {
+    background-color: hsl(0, 0%, 27%);
+}

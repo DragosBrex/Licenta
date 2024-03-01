@@ -1,5 +1,6 @@
 body {
     background-color: #f0f0f0;
+    overflow: hidden;
 }
 
 html, body { height: 100%; }
@@ -8,19 +9,22 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;
 
 .notification {
     width: 310px;
-    height: 100px;
-    background-color: rgba(215, 215, 215, 0.567); 
+    max-height: 150px;
+    background-color: rgba(203, 203, 203, 0.225); 
     border-radius: 10px;
     margin: 10px 5px 10px;
+    padding: 5px 5px 10px;
     text-align: left;
+    word-wrap: break-word;
+    border: 1px solid rgb(194, 194, 194);
 }
 
 .notification button {
+    top: 10px;
     float: right;
-    margin-top: 30px;
-    margin-right: 10px;
     background-color: rgb(137, 137, 137);
     color: rgb(0, 0, 0);
+    border-radius: 5px;
 }
 
 .notification div {
@@ -37,3 +41,52 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;
     top: 35px;
     right: 10px;
 }
+
+
+
+
+@keyframes animationDown {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0%);
+    opacity: 1;
+  }
+}
+
+.animation-down {
+  animation: animationDown 0.5s ease forwards;
+}
+
+@keyframes animationRight {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0%);
+    opacity: 1;
+  }
+}
+
+.animation-right {
+  animation: animationRight 0.5s ease forwards;
+}
+
+@keyframes animationLeft {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0%);
+    opacity: 1;
+  }
+}
+
+.animation-left {
+  animation: animationLeft 0.5s ease forwards;
+}
+

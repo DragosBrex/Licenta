@@ -1,36 +1,106 @@
 .container {
-    top:10%;
-}
-
-#chart {
-    height: 60%;
     width: 100%;
-    position: absolute;
-    top: 35%;
-    left: 63%;
-    transform: translate(-50%, -50%);
+    height: 700px;
+    display: flex;
+    justify-content: center;
 }
 
-.options {
-    position: absolute;
-    top: 80%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+.left-container {
+    width: 70%;
+    height: 550px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.left-container h2 {
+    width: 100%;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+.left-container .accuracy {
+    width: 100%;
+    margin-top: 35px;
+    background-color: rgba(228, 228, 228, 0.742);
+    border-radius: 5px;
+}
+
+.right-container {
+    position: relative;
+    width: 300px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: 50px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.parameter {
+    margin-top: 15px;
+    margin-left: 10px;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+ul {
+    background-color: #e7e7e739;
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin-bottom: 5px;
+}
+
+li:hover {
+    background-color: #e7e7e7c1;
+}
+
+span {
+    display: inline-block;
+    padding: 3px 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+.list {
+    overflow-y: auto;
+    max-height: 150px;
+}
+
+::-webkit-scrollbar {
+    width: 5px; 
+}
+
+::-webkit-scrollbar-track {
+    background-color: #dcdcdc;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #888; 
+    border-radius: 5px; 
 }
 
 button {
-    background-color: #4caf50;
+    position: absolute;
+    bottom: 15px;
+    left: 10px;
+    right: 10px;
+    height: 40px;
+    background-color: #266826;
     color: white;
-    padding: 20px;
+    padding: 10px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin: 100px;
-  }
+}
 
-h2 {
-    position: absolute;
-    top: 7%;
-    left: 7%;
-    transform: translate(-50%, -50%);
+button:hover {
+    background-color: hsl(0, 0%, 27%);
 }
