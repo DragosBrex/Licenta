@@ -1,5 +1,6 @@
 button {
     background-color: #333; 
+    box-shadow: rgba(0, 0, 0, 0.397) 0px 5px 15px;
     height: 120px;
     width: 120px;
     color: #fff; 
@@ -8,24 +9,64 @@ button {
     border-radius: 10px;
   }
 
+  button:hover {
+    border: solid rgb(123, 122, 122);
+    border-width: 5px;
+  }
+
 .container {
   position: absolute;
-  top: 20%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%); 
   text-align: center;
 }
 
 .models-grid {
+  border-radius: 10px;
+  /* background-color: #f9f9f9;  */
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  height: 570px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 10px;
-  max-height: 7vh;
+  /* max-height: 7vh; */
   max-width: 80vw;
+  overflow: auto;
 }
 
 .model {
   text-align: center;
   padding: 10px;
   margin: 5px; 
+}
+
+.in-model {
+  text-align: center;
+  padding: 10px;
+  margin: 5px; 
+}
+
+.in-model button {
+  background-color: #3333332d; 
+  box-shadow: rgba(0, 0, 0, 0.397) 0px 5px 15px;
+  height: 120px;
+  width: 120px;
+  color: #fff; 
+  border: none;
+  cursor: default;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar {
+  width: 5px; 
+}
+
+::-webkit-scrollbar-track {
+  background-color: #dcdcdc;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #888; 
+  border-radius: 5px; 
 }

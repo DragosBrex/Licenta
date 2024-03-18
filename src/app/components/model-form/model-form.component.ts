@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, convertToParamMap } from '@angular/router';
-import { MlModel } from '../my-models/my-models.component';
+import { MlModel, MyModelsComponent } from '../my-models/my-models.component';
 import { NotificationService } from '../notification/notification.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DataPreviewComponent } from '../data-preview/data-preview.component';
@@ -63,7 +63,13 @@ export class ModelFormComponent {
   nameError: boolean = false;
   
 
-  constructor(private http: HttpClient, private router: Router, private notificationService: NotificationService, private dialog: MatDialog, private app: AppComponent) {}
+  constructor(private http: HttpClient, 
+    private router: Router, 
+    private notificationService: NotificationService, 
+    private dialog: MatDialog, 
+    private app: AppComponent,
+    private myModels: MyModelsComponent
+    ) {}
 
   ngOnInit() {
     this.app.changeActiveNavPage("create-model");
@@ -325,7 +331,7 @@ export class ModelFormComponent {
       this.signalsWithInfluenceInvalid = true;
     }
 
-    if(!this.nameInvalid && !this.signalsToPredictInvalid && !this.signalsWithInfluenceInvalid)
+    if(!this.nameInvalid && !this.signalsToPredictInvalid && !this.signalsWithInfluenceInvalid && !this.nameError)
      this.trainAndTestModel();
   }
 
@@ -375,12 +381,14 @@ export class ModelFormComponent {
     this.router.navigate(['/home']);
 
     this.notificationService.createInfoNotification(model,'<i>Your model is being trained..<i>');
+    this.myModels.createIncommingModel(model);
 
     this.trainAndTestAsync(model)
       .then((response) => {
         console.log(response);
         this.notificationService.closeNotification(model);
         this.notificationService.createSuccesNotification(model, "<i>Your model was trained successfully! \nCheck <a href='my-models'>My Models</a> for more information.</i>");
+        this.myModels.deleteIncomingModel(model);
       })
       .catch((error) => {
         console.error('Error while training and testing the model', error);

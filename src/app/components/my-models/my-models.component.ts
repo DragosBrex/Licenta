@@ -30,6 +30,7 @@ export class MlModel {
 export class MyModelsComponent {
 
   models: MlModel[] = [];
+  incomingModels: any[] = [];
   //mlModel: MlModel = new MlModel;
 
   constructor(private http: HttpClient, private router: Router, private dialog: MatDialog, private app: AppComponent) {};
@@ -42,6 +43,65 @@ export class MyModelsComponent {
     this.app.changeActiveNavPage("my-models");
     this.app.animateBody("animation-right");
     this.loadModels();
+
+    const item = localStorage.getItem('incomingModels');
+    if(item == null) {
+      this.incomingModels = [];
+    }
+    else {
+      this.incomingModels = JSON.parse(item);
+    }
+
+    // let model = new MlModel;
+    // model.name = "testing";
+    // this.createIncommingModel(model)
+  }
+
+  transformStringIntoArray(str: string): any[] {
+    if(str == null)
+      return [];
+
+    str = str.trim().replace(/^"(.*)"$/, '$1');
+    const array = str.split(',').map(item => item.trim());
+
+    return array;
+  }
+
+
+  createIncommingModel(model: any) {
+    const item = localStorage.getItem('incomingModels');
+    if(item == null) {
+      this.incomingModels = [];
+      this.incomingModels.push(model)
+      localStorage.setItem('incomingModels',JSON.stringify(this.incomingModels))
+    }
+    else {
+      this.incomingModels = JSON.parse(item);
+      this.incomingModels.push(model)
+      localStorage.setItem('incomingModels',JSON.stringify(this.incomingModels))
+    }    
+  }
+
+  deleteIncomingModel(model: any) {
+    let modelToDelete;
+    const item = localStorage.getItem('incomingModels');
+    if(item != null) {
+      this.incomingModels = JSON.parse(item);
+
+      this.incomingModels.forEach((item) => {
+        if(item.name == model.name)
+          modelToDelete = item;
+      })
+      
+      const index = this.incomingModels.indexOf(modelToDelete);
+      if (index > -1) {
+          console.log("Am intrat unde trebuie")
+          this.incomingModels.splice(index, 1);
+      }
+
+      localStorage.setItem('incomingModels',JSON.stringify(this.incomingModels))
+      window.location.reload();
+    } 
   }
 
   loadModels() {
@@ -69,13 +129,15 @@ export class MyModelsComponent {
 
           this.models.push(mlModel)
         }})
-
-        console.log(this.models)
       },
       (error) => {
         console.error('Error while receiving models', error);
       }
     );
+  }
+
+  refresh () {
+    window.location.reload();
   }
 
   navigateToFileUpload(model: MlModel) {

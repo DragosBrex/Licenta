@@ -6,8 +6,9 @@
 }
 
 .left-container {
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     width: 70%;
-    height: 550px;
+    height: 600px;
     border-radius: 5px;
     background-color: #f9f9f9;
     margin-top: 20px;
@@ -21,13 +22,14 @@
 }
 
 .left-container .accuracy {
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     width: 100%;
-    margin-top: 35px;
     background-color: rgba(228, 228, 228, 0.742);
     border-radius: 5px;
 }
 
 .right-container {
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     position: relative;
     width: 300px;
     margin-top: 20px;

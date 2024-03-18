@@ -3,10 +3,12 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MlModel } from '../my-models/my-models.component';
 import { AppComponent } from '../../app.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-file-upload',
   standalone: true,
+  imports: [CommonModule],
   templateUrl: './file-upload.component.html',
   styleUrls: ['./file-upload.component.css']
 })

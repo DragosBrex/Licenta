@@ -166,7 +166,7 @@ export class ModelPredictComponent {
       .then((response) => {
         this.notificationService.closeNotification(model);
         this.notificationService.createSuccesNotification(model, '<i>Predictions have been made successfully!</i>');
-        this.myModels.loadModels();
+        this.myModels.refresh();
       })
       .catch((error) => {
         console.error('Error while predicting using the model', error);

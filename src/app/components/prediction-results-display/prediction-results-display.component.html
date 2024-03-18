@@ -1,8 +1,11 @@
 <div class="container">
     <div class="left-container">
-        <h2><b>Prediction results: </b>{{modelName}}</h2>
+        <h2>{{modelName}}</h2>
         <div id="chart">
             <canvas id="resultsChart"> {{ chart }} </canvas>
+        </div>
+        <div class="accuracy">
+            <h2>Past data correlation: %</h2>
         </div>
     </div>
 

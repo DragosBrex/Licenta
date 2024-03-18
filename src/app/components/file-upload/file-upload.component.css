@@ -1,6 +1,6 @@
 .file-upload {
     position: absolute;
-    top: 45%;
+    top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
@@ -8,14 +8,27 @@
 img {
     width: 310px;
     background-color: rgba(209, 209, 209, 0.466);
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     border-radius: 20px;
+    cursor: pointer;
 }
 
 .container {
     justify-content: center;
     text-align: center;
+    margin-top: 70px;
 }
 
-.container h2 {
-    padding-top: 90px;
+.image {
+    background-color: inherit;
+    border-radius: 20px;
+}
+
+.green-image {
+    background-color: rgba(61, 186, 52, 0.782);
+    border-radius: 20px;
+}
+
+input {
+    margin-top: 15px;
 }

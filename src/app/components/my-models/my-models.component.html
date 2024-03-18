@@ -4,7 +4,7 @@
         <h2>My Models</h2>
     </div>
 
-    <div *ngIf="models.length > 0">
+    <div *ngIf="models.length > 0 || incomingModels.length > 0">
         <div class="models-grid">
           <div *ngFor="let model of models" class="model">
             <button (click)="openDialog(model)">
@@ -13,11 +13,19 @@
             <br>
             {{ model.name }}
           </div>  
+
+          <div *ngFor="let inModel of incomingModels" class="in-model">
+            <button disabled="true">
+            <img src="https://i.gifer.com/ZKZg.gif" alt="Loading Logo" width="100px" height="100px" />
+            </button>
+            <br>
+            {{ inModel.name }}
+          </div>  
         </div>
-      </div>
+    </div>
       
 
-    <div *ngIf="models.length == 0">
+    <div *ngIf="models.length == 0 && incomingModels.length == 0">
         <h3>You have no models</h3>
     </div> 
 </div>

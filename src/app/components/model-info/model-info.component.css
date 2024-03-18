@@ -10,6 +10,10 @@
 }
 
 .exit {
+  background-color: #114c03;
+}
+
+.delete {
   background-color: #b70a0a;
 }
 

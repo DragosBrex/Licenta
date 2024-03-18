@@ -4,10 +4,11 @@
 }
 
 .container {
-  width: 50%; 
+  min-width: 800px; 
   padding: 20px;
   border-radius: 5px;
   background-color: #f9f9f9;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 
 .model-name {
@@ -201,6 +202,7 @@ form input {
 }
   
 form button {
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   background-color: #266826;
   color: white;
   padding: 10px;

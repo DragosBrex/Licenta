@@ -8,6 +8,12 @@ import { Chart } from 'chart.js/auto';
 import { AppComponent } from '../../app.component';
 import { MlModel } from '../my-models/my-models.component';
 
+export class DataSet {
+  label: string = '';
+  data: any[] = [];
+  backgroundColor: any;
+}
+
 @Component({
   selector: 'app-prediction-results-display',
   standalone: true,
@@ -26,30 +32,48 @@ export class PredictionResultsDisplayComponent {
   predictedValues: number[] = [];
 
   labels: number[] = [];
+  datasets: DataSet[] = [];
 
   public chart: any;
 
-  createChart(){
+  createChart(labels: number[], datasets: any[]){
     this.chart = new Chart("resultsChart", {
       type: 'line',
-
       data: {
-        labels: this.labels,
-	       datasets: [
-          {
-            label: "Predicted Values",
-            data: this.predictedValues,
-            backgroundColor: 'red'
-          }  
-        ]
+        labels: labels,
+        datasets: datasets
       },
       options: {
-        aspectRatio:2.5
-      }
-      
+        aspectRatio: 2,
+        elements: {
+          line: {
+            tension: 0 
+          }
+      }}
     });
   }
 
+  generateRandomColorPrediction(): string {
+    const red = 100; 
+    const green = 0;
+    const blue = Math.floor(Math.random() * 256);
+  
+    const color = `rgb(${red}, ${green}, ${blue})`;
+  
+    return color;
+  }
+
+  splitArrayIntoNParts<T>(array: T[], n: number): T[][] {
+    const result: T[][] = [];
+    const len = array.length;
+    const partSize = Math.ceil(len / n);
+    
+    for (let i = 0; i < len; i += partSize) {
+        result.push(array.slice(i, i + partSize));
+    }
+    
+    return result;
+}
   ngOnInit() {
     this.app.animateBody("animation-down")
     this.modelName = this.route.snapshot.paramMap.get('modelName')!;
@@ -73,15 +97,34 @@ export class PredictionResultsDisplayComponent {
       this.model.signalsWithInfluence[this.model.signalsWithInfluence.length - 1].substring(0, this.model.signalsWithInfluence[this.model.signalsWithInfluence.length - 1].length - 1)
 
 
-      let contor = 1;
-      this.predictedValues.forEach(() => this.labels.push(contor++));
+      let numberOfSignals = this.model.signalsToPredict.length;
+      let predictedArrays = this.splitArrayIntoNParts(this.predictedValues, numberOfSignals);
 
-      this.createChart();
+      for(let contor=1; contor<=this.predictedValues.length / numberOfSignals; contor++)
+        this.labels.push(contor);
+
+      for(let i=0; i < numberOfSignals; i++)
+      {
+          try {
+              let dataset = new DataSet;
+              dataset.label = "Prediction: " + this.model.signalsToPredict[i];
+              dataset.data = predictedArrays[i];
+              dataset.backgroundColor = this.generateRandomColorPrediction();
+              console.log(dataset)
+
+              this.datasets.push(dataset)
+          } catch (error) {
+            console.log(error);
+          }
+      }
     },
     (error) => {
       console.error('Error while returning model by name', error);
-    }
-    );
+    });
+
+    setTimeout(() => {
+      this.createChart(this.labels, this.datasets)
+    }, 100);
   }
 
   returnToMyModels(): void {

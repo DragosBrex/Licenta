@@ -56,7 +56,7 @@
             <option *ngFor="let column of columnsInfluence" [value]="column">{{ column }}</option>
           </select>
           <button [disabled]="!(selectedSignalsWithInfluence.length > 0)" [ngClass]="!(selectedSignalsWithInfluence.length > 0) ? 'preview-disabled' : 'preview'" (click)="openDialog('influence')">Preview Data</button>
-          <button *ngIf="!correlationAnimation" [disabled]="!(selectedSignalsToPredict.length > 0)" [ngClass]="!(selectedSignalsToPredict.length > 0) ? 'correlation-disabled' : 'correlation'" (click)="getCorrelationData()">Correlation Data</button>
+          <button *ngIf="!correlationAnimation" [disabled]="!(selectedSignalsToPredict.length > 0)" [ngClass]="!(selectedSignalsToPredict.length > 0) ? 'correlation-disabled' : 'correlation'" (click)="getCorrelationData()">Correlating Data</button>
           <button *ngIf="correlationAnimation" class="loading-animation"><img src="https://i.gifer.com/ZKZg.gif" width="20px"></button>
           <div class="signalsWithInfluence" *ngFor="let signal of selectedSignalsWithInfluence"> {{signal}} <button (click)="deleteSignalFromList('selectedSignalsWithInfluence', signal)">X</button> </div>
           

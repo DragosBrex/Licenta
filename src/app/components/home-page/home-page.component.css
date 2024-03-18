@@ -3,6 +3,7 @@
   text-align: center;
   align-items: center;
   padding: 20px;
+  min-width: 700px;
 }
 
 h1 {
@@ -17,13 +18,26 @@ h1 {
 }
 
 button {
+  position: relative;
   background-color: #333; 
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   height: 150px;
   width: 150px;
   color: #fff; 
   border: none;
   cursor: pointer;
   border-radius: 10px;
+}
+
+button:hover {
+  border: solid rgb(123, 122, 122);
+  border-width: 5px;
+}
+
+span {
+  position: absolute;
+  margin-top: -75px;
+  margin-left: -40px;
 }
 
 

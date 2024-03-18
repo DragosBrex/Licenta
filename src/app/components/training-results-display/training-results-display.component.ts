@@ -7,6 +7,12 @@ import { HttpClient } from '@angular/common/http';
 import { MlModel } from '../my-models/my-models.component';
 import { AppComponent } from '../../app.component';
 
+export class DataSet {
+  label: string = '';
+  data: any[] = [];
+  backgroundColor: any;
+}
+
 @Component({
   selector: 'app-training-results-display',
   standalone: true,
@@ -25,6 +31,7 @@ export class TrainingResultsDisplayComponent {
   accuracyScore: number = 0;
 
   labels: number[] = [];
+  datasets: DataSet[] = [];
 
   public chart: any;
 
@@ -34,7 +41,7 @@ export class TrainingResultsDisplayComponent {
 
     this.http.get<any>('http://localhost:8080/models/name=' + this.modelName).subscribe(
     (response) => {
-      
+      console.log(response)
       this.model.name = this.modelName;
       this.model.signalsToPredict = response.signalsToPredict;
       this.model.signalsWithInfluence =  response.signalsWithInfluence;
@@ -53,43 +60,100 @@ export class TrainingResultsDisplayComponent {
 
       this.accuracyScore = response.trainingTestingResults.accuracy;
 
-      let contor = 1;
-      this.trainingActualValues.forEach(() => this.labels.push(contor++));
+      let numberOfSignals = this.model.signalsToPredict.length;
+      let actualArrays = this.splitArrayIntoNParts(this.trainingActualValues, numberOfSignals);
+      let predictedArrays = this.splitArrayIntoNParts(this.trainingPredictedValues, numberOfSignals);
 
-      this.createChart();
-    },
-    (error) => {
-      console.error('Error while returning model by name', error);
-    }
-    );
-  }
+      for(let contor=1; contor<=this.trainingActualValues.length / numberOfSignals; contor++)
+        this.labels.push(contor);
 
-  createChart(){
-  
-    this.chart = new Chart("resultsChart", {
-      type: 'line',
+      for(let i=0; i < numberOfSignals; i++)
+      {
+          try {
+              let dataset = new DataSet;
+              dataset.label = "Actual: " + this.model.signalsToPredict[i];
+              dataset.data = actualArrays[i];
+              dataset.backgroundColor = this.generateRandomColorActual();
+              console.log(dataset)
 
-      data: {
-        labels: this.labels,
-	       datasets: [
-          {
-            label: "Actual Values",
-            data: this.trainingActualValues,
-            backgroundColor: 'blue'
-          },
-          {
-            label: "Predicted Values",
-            data: this.trainingPredictedValues,
-            backgroundColor: 'red'
-          }  
-        ]
-      },
-      options: {
-        aspectRatio:2.5
+              this.datasets.push(dataset)
+          } catch (error) {
+            console.log(error);
+          }
       }
+
+      for(let i=0; i < numberOfSignals; i++)
+      {
+          try {
+              let dataset = new DataSet;
+              dataset.label = "Prediction: " + this.model.signalsToPredict[i];
+              dataset.data = predictedArrays[i];
+              dataset.backgroundColor = this.generateRandomColorPrediction();
+              console.log(dataset)
+
+              this.datasets.push(dataset)
+          } catch (error) {
+            console.log(error);
+          }
+      }
+
       
     });
+
+    setTimeout(() => {
+      this.createChart(this.labels, this.datasets)
+    }, 100);
+    
   }
+
+  createChart(labels: number[], datasets: any[]){
+    this.chart = new Chart("resultsChart", {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: datasets
+      },
+      options: {
+        aspectRatio: 2,
+        elements: {
+          line: {
+            tension: 0 
+          }
+      }}
+    });
+  }
+
+  generateRandomColorActual(): string {
+    const red = Math.floor(Math.random() * 512); 
+    const green = 0;
+    const blue = 0;
+  
+    const color = `rgb(${red}, ${green}, ${blue})`;
+  
+    return color;
+  }
+
+  generateRandomColorPrediction(): string {
+    const red = 100; 
+    const green = 0;
+    const blue = Math.floor(Math.random() * 256);
+  
+    const color = `rgb(${red}, ${green}, ${blue})`;
+  
+    return color;
+  }
+
+  splitArrayIntoNParts<T>(array: T[], n: number): T[][] {
+    const result: T[][] = [];
+    const len = array.length;
+    const partSize = Math.ceil(len / n);
+    
+    for (let i = 0; i < len; i += partSize) {
+        result.push(array.slice(i, i + partSize));
+    }
+    
+    return result;
+}
 
   returnToMyModels(): void {
     this.router.navigate(['/my-models']);
